@@ -36,7 +36,7 @@ export function FinalCTA() {
                 <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
-                href="/customize"
+                href="/design-studio"
                 className="inline-flex items-center justify-center gap-2 border border-gold text-gold px-8 py-3.5 rounded-lg text-sm font-semibold hover:bg-gold hover:text-white transition-colors"
               >
                 <Sparkles size={16} />

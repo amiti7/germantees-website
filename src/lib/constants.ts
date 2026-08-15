@@ -12,7 +12,6 @@ export const NAV_LINKS = [
   { label: "Family", href: "/family" },
   { label: "Birthday", href: "/birthday" },
   { label: "Festivals", href: "/festivals" },
-  { label: "Create Your Own", href: "/customize" },
   { label: "Design Studio", href: "/design-studio" },
 ] as const;
 
@@ -22,7 +21,6 @@ export const FOOTER_LINKS = {
     { label: "Baby", href: "/baby" },
     { label: "Family", href: "/family" },
     { label: "Birthday", href: "/birthday" },
-    { label: "Customize", href: "/customize" },
     { label: "Design Studio", href: "/design-studio" },
   ],
   brand: [

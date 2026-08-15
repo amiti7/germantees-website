@@ -59,7 +59,7 @@ export function PersonalizationHero() {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
-                href="/customize"
+                href="/design-studio"
                 className="inline-flex items-center justify-center gap-2 bg-navy text-white px-8 py-3.5 rounded-lg text-sm font-semibold hover:bg-navy/90 transition-colors group"
               >
                 Design Your T-Shirt

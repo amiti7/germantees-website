@@ -32,7 +32,7 @@ export default function NotFound() {
             Go Home
           </Link>
           <Link
-            href="/customize"
+            href="/design-studio"
             className="inline-flex items-center justify-center gap-2 border border-gold text-gold px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gold hover:text-white transition-colors"
           >
             <Sparkles size={16} />

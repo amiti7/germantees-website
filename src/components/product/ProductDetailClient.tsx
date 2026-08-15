@@ -230,7 +230,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 Add to Cart
               </button>
               <Link
-                href="/customize"
+                href="/design-studio"
                 className="flex-1 inline-flex items-center justify-center gap-2 border border-gold text-gold py-3.5 rounded-lg text-sm font-semibold hover:bg-gold hover:text-white transition-colors"
               >
                 <Sparkles size={16} />
