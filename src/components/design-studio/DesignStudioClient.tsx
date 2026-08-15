@@ -5,11 +5,8 @@ import { cn } from "@/lib/utils";
 import { TSHIRT_COLORS, SIZE_CHART } from "@/lib/constants";
 import { TshirtMockup } from "./TshirtMockup";
 import { GraphicUploader } from "./GraphicUploader";
-import { TryOnPanel } from "./TryOnPanel";
 import { MultiViewGrid } from "./MultiViewGrid";
 import {
-  Upload,
-  Camera,
   Grid3x3,
   ShoppingCart,
   Download,
@@ -19,12 +16,11 @@ import {
   ZoomOut,
   Move,
   Shirt,
-  User,
   Layers,
 } from "lucide-react";
 
 type SizeCategory = "kids" | "men" | "women";
-type ViewMode = "single" | "multiview" | "tryon";
+type ViewMode = "single" | "multiview";
 type TshirtSide = "front" | "back";
 
 interface DesignGraphic {
@@ -49,7 +45,6 @@ export function DesignStudioClient() {
   const [side, setSide] = useState<TshirtSide>("front");
   const [graphics, setGraphics] = useState<DesignGraphic[]>([]);
   const [selectedGraphicId, setSelectedGraphicId] = useState<string | null>(null);
-  const [tryOnPhoto, setTryOnPhoto] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const selectedGraphic = graphics.find((g) => g.id === selectedGraphicId) || null;
@@ -87,14 +82,6 @@ export function DesignStudioClient() {
     reader.readAsDataURL(file);
   }, [side]);
 
-  const handleTryOnUpload = useCallback((file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setTryOnPhoto(e.target?.result as string);
-      setViewMode("tryon");
-    };
-    reader.readAsDataURL(file);
-  }, []);
 
   const updateGraphic = useCallback(
     (id: string, updates: Partial<DesignGraphic>) => {
@@ -175,18 +162,6 @@ export function DesignStudioClient() {
                 <Grid3x3 size={16} />
                 Multi-View
               </button>
-              <button
-                onClick={() => setViewMode("tryon")}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                  viewMode === "tryon"
-                    ? "bg-navy text-white"
-                    : "text-warm-grey hover:text-navy hover:bg-ivory"
-                )}
-              >
-                <User size={16} />
-                Virtual Try-On
-              </button>
             </div>
 
             {/* Canvas */}
@@ -230,6 +205,7 @@ export function DesignStudioClient() {
                 <div className="relative aspect-square max-h-[600px] mx-auto p-8">
                   <TshirtMockup
                     color={selectedColor.hex}
+                    colorName={selectedColor.name}
                     graphic={selectedSideGraphic}
                     side={side}
                     onGraphicMove={(x: number, y: number) =>
@@ -330,14 +306,6 @@ export function DesignStudioClient() {
               />
             )}
 
-            {viewMode === "tryon" && (
-              <TryOnPanel
-                tryOnPhoto={tryOnPhoto}
-                onUpload={handleTryOnUpload}
-                selectedColor={selectedColor}
-                graphic={selectedGraphic}
-              />
-            )}
           </div>
 
           {/* RIGHT: Controls panel */}
@@ -476,33 +444,6 @@ export function DesignStudioClient() {
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* Virtual try-on upload */}
-            <div className="bg-white rounded-xl border border-border p-4">
-              <h3 className="text-xs font-semibold tracking-widest uppercase text-gold mb-3 flex items-center gap-2">
-                <Camera size={14} />
-                Virtual Try-On
-              </h3>
-              <p className="text-xs text-warm-grey mb-3">
-                Upload a photo to see how the T-shirt looks on you or your child.
-              </p>
-              <label className="flex items-center justify-center gap-2 bg-ivory border border-dashed border-border rounded-lg p-3 cursor-pointer hover:border-navy/30 transition-colors">
-                <Upload size={16} className="text-warm-grey" />
-                <span className="text-sm text-navy font-medium">Upload Photo</span>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleTryOnUpload(file);
-                  }}
-                />
-              </label>
-              {tryOnPhoto && (
-                <p className="text-xs text-success mt-2">Photo uploaded — switch to Virtual Try-On tab</p>
-              )}
             </div>
 
             {/* Download + Cart (actions) */}

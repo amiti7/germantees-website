@@ -1,6 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { TSHIRT_COLORS } from "@/lib/constants";
+import { X } from "lucide-react";
+
+// Map color names to avatar image filenames
+const COLOR_IMAGE_MAP: Record<string, string> = {
+  White: "/images/avatar/men_white_front.png",
+  Black: "/images/avatar/men_black_front.png",
+  Navy: "/images/avatar/men_navy_front.png",
+  Red: "/images/avatar/men_red_front.png",
+  Yellow: "/images/avatar/men_yellow_front.png",
+  Pink: "/images/avatar/men_pink_front.png",
+  Green: "/images/avatar/men_green_front.png",
+  Blue: "/images/avatar/men_blue_front.png",
+};
 
 interface DesignGraphic {
   id: string;
@@ -25,6 +39,8 @@ export function MultiViewGrid({
   selectedGraphic,
   sizeCategory,
 }: MultiViewGridProps) {
+  const [previewColor, setPreviewColor] = useState<{ name: string; hex: string } | null>(null);
+
   const sizeLabel =
     sizeCategory === "kids"
       ? "Kids"
@@ -38,71 +54,110 @@ export function MultiViewGrid({
         Multi-View Preview
       </h3>
       <p className="text-xs text-warm-grey mb-6">
-        See your design across all available colours — {sizeLabel} sizing
+        See your design across all available colours — {sizeLabel} sizing.
+        Click any colour to enlarge.
       </p>
+
+      {/* Large preview when a color is selected */}
+      {previewColor && (
+        <div className="mb-6 rounded-xl border border-border overflow-hidden bg-gray-100 relative">
+          <button
+            onClick={() => setPreviewColor(null)}
+            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/90 border border-border flex items-center justify-center hover:bg-white transition-colors shadow-sm"
+          >
+            <X size={16} className="text-navy" />
+          </button>
+          <div className="relative aspect-square max-h-[600px] mx-auto p-8">
+            <div className="relative w-full h-full flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={COLOR_IMAGE_MAP[previewColor.name]}
+                alt={`Model wearing ${previewColor.name} t-shirt`}
+                className="w-full h-full object-contain max-w-md"
+                draggable={false}
+              />
+              {/* Graphic overlay on chest */}
+              {selectedGraphic && (
+                <div
+                  className="absolute"
+                  style={{
+                    top: `${selectedGraphic.y}%`,
+                    left: `${selectedGraphic.x}%`,
+                    transform: `translate(-50%, -50%) scale(${selectedGraphic.scale}) rotate(${selectedGraphic.rotation}deg)`,
+                    maxWidth: "35%",
+                    maxHeight: "40%",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={selectedGraphic.src}
+                    alt={selectedGraphic.name}
+                    className="w-full h-full object-contain"
+                    draggable={false}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="px-4 py-3 border-t border-border bg-white flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span
+                className="w-4 h-4 rounded-full border border-border"
+                style={{ backgroundColor: previewColor.hex }}
+              />
+              <span className="text-sm font-medium text-navy">{previewColor.name}</span>
+            </div>
+            <span className="text-xs text-warm-grey">{sizeLabel} sizing</span>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {TSHIRT_COLORS.map((color) => {
-          const isLight =
-            color.hex === "#FFFFFF" ||
-            color.hex === "#FACC15" ||
-            color.hex === "#F472B6";
+          const isSelected = previewColor?.hex === color.hex;
+          const imageSrc = COLOR_IMAGE_MAP[color.name];
 
           return (
             <div
               key={color.name}
-              className="rounded-xl border border-border overflow-hidden bg-ivory"
+              onClick={() => setPreviewColor(isSelected ? null : color)}
+              className={`rounded-xl border-2 overflow-hidden bg-gray-50 cursor-pointer transition-all hover:shadow-md ${
+                isSelected
+                  ? "border-navy ring-2 ring-navy/20 shadow-md"
+                  : "border-border hover:border-navy/30"
+              }`}
             >
-              <div className="aspect-square relative flex items-center justify-center p-4">
-                {/* Mini T-shirt SVG */}
-                <svg
-                  viewBox="0 0 400 480"
-                  className="w-full h-full"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M100,60 L60,80 L20,130 L60,150 L80,120 L80,440 L320,440 L320,120 L340,150 L380,130 L340,80 L300,60 L270,80 C250,95 150,95 130,80 Z"
-                    fill={color.hex}
-                    stroke={
-                      isLight
-                        ? "#E5E2D9"
-                        : "rgba(255,255,255,0.1)"
-                    }
-                    strokeWidth="1.5"
+              <div className="aspect-square relative overflow-hidden p-2">
+                <div className="relative w-full h-full flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={imageSrc}
+                    alt={`${color.name} t-shirt`}
+                    className="w-full h-full object-contain"
+                    draggable={false}
                   />
-                  <path
-                    d="M130,80 C150,95 250,95 270,80"
-                    fill="none"
-                    stroke={
-                      isLight
-                        ? "#E5E2D9"
-                        : "rgba(255,255,255,0.15)"
-                    }
-                    strokeWidth="1.5"
-                  />
-                </svg>
-
-                {/* Graphic overlay */}
-                {selectedGraphic && (
-                  <div
-                    className="absolute"
-                    style={{
-                      left: `${selectedGraphic.x}%`,
-                      top: `${selectedGraphic.y}%`,
-                      transform: `translate(-50%, -50%) scale(${selectedGraphic.scale * 0.6})`,
-                      maxWidth: "30%",
-                      maxHeight: "35%",
-                    }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={selectedGraphic.src}
-                      alt={selectedGraphic.name}
-                      className="w-full h-full object-contain"
-                      draggable={false}
-                    />
-                  </div>
-                )}
+                  {/* Graphic overlay on chest */}
+                  {selectedGraphic && (
+                    <div
+                      className="absolute"
+                      style={{
+                        top: `${selectedGraphic.y}%`,
+                        left: `${selectedGraphic.x}%`,
+                        transform: `translate(-50%, -50%) scale(${selectedGraphic.scale}) rotate(${selectedGraphic.rotation}deg)`,
+                        maxWidth: "35%",
+                        maxHeight: "40%",
+                      }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={selectedGraphic.src}
+                        alt={selectedGraphic.name}
+                        className="w-full h-full object-contain"
+                        draggable={false}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="px-3 py-2 border-t border-border bg-white">
                 <div className="flex items-center gap-2">
