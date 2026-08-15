@@ -17,6 +17,8 @@ import {
   Move,
   Shirt,
   Layers,
+  Type,
+  Trash2,
 } from "lucide-react";
 
 type SizeCategory = "boy" | "girl" | "men" | "women";
@@ -37,6 +39,35 @@ interface DesignGraphic {
   side: TshirtSide;
 }
 
+interface DesignText {
+  id: string;
+  text: string;
+  subtext: string;
+  font: string;
+  color: string;
+  fontSize: number;
+  subtextFontSize: number;
+  x: number;
+  y: number;
+  side: TshirtSide;
+}
+
+const FONT_OPTIONS = [
+  "Inter",
+  "Playfair Display",
+  "Georgia",
+  "Arial Black",
+  "Impact",
+  "Comic Sans MS",
+  "Courier New",
+  "Verdana",
+];
+
+const TEXT_COLORS = [
+  "#111827", "#FFFFFF", "#C9A45C", "#DC2626", "#16A34A",
+  "#3B82F6", "#F472B6", "#FACC15", "#1E3A5F", "#F97316",
+];
+
 export function DesignStudioClient() {
   const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string }>(TSHIRT_COLORS[0]);
   const [sizeCategory, setSizeCategory] = useState<SizeCategory>("boy");
@@ -45,6 +76,7 @@ export function DesignStudioClient() {
   const [side, setSide] = useState<TshirtSide>("front");
   const [graphics, setGraphics] = useState<DesignGraphic[]>([]);
   const [selectedGraphicId, setSelectedGraphicId] = useState<string | null>(null);
+  const [texts, setTexts] = useState<DesignText[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const selectedGraphic = graphics.find((g) => g.id === selectedGraphicId) || null;
@@ -101,6 +133,37 @@ export function DesignStudioClient() {
     },
     [selectedGraphicId]
   );
+
+  const sideTexts = texts.filter((t) => t.side === side);
+
+  const addText = useCallback(() => {
+    const newText: DesignText = {
+      id: `text-${Date.now()}`,
+      text: "",
+      subtext: "",
+      font: FONT_OPTIONS[0],
+      color: "#111827",
+      fontSize: 24,
+      subtextFontSize: 16,
+      x: 50,
+      y: 45,
+      side,
+    };
+    setTexts((prev) => [...prev, newText]);
+  }, [side]);
+
+  const updateText = useCallback(
+    (id: string, updates: Partial<DesignText>) => {
+      setTexts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, ...updates } : t))
+      );
+    },
+    []
+  );
+
+  const removeText = useCallback((id: string) => {
+    setTexts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const sizes = SIZE_CHART[sizeCategory];
   const selectedSizeData = sizes.find((s) => s.label === selectedSize);
@@ -209,9 +272,13 @@ export function DesignStudioClient() {
                     graphic={selectedSideGraphic}
                     side={side}
                     sizeCategory={sizeCategory}
+                    texts={sideTexts}
                     onGraphicMove={(x: number, y: number) =>
                       selectedGraphicId &&
                       updateGraphic(selectedGraphicId, { x, y })
+                    }
+                    onTextMove={(id: string, x: number, y: number) =>
+                      updateText(id, { x, y })
                     }
                     sizeData={selectedSizeData}
                   />
@@ -302,6 +369,7 @@ export function DesignStudioClient() {
             {viewMode === "multiview" && (
               <MultiViewGrid
                 graphics={graphics}
+                texts={texts}
                 sizeCategory={sizeCategory}
                 side={side}
               />
@@ -313,6 +381,123 @@ export function DesignStudioClient() {
           <div className="space-y-4">
             {/* Upload graphic */}
             <GraphicUploader onUpload={handleGraphicUpload} />
+
+            {/* Text editor */}
+            <div className="bg-white rounded-xl border border-border p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-semibold tracking-widest uppercase text-gold flex items-center gap-2">
+                  <Type size={14} />
+                  Text Overlay
+                </h3>
+                <button
+                  onClick={addText}
+                  className="text-xs font-medium text-navy bg-ivory hover:bg-navy hover:text-white px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  + Add Text
+                </button>
+              </div>
+
+              {sideTexts.length === 0 && (
+                <p className="text-xs text-warm-grey">
+                  No text on {side} side. Click &quot;Add Text&quot; to get started.
+                </p>
+              )}
+
+              <div className="space-y-4">
+                {sideTexts.map((t) => (
+                  <div key={t.id} className="border border-border rounded-lg p-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-navy">Text Block</span>
+                      <button
+                        onClick={() => removeText(t.id)}
+                        className="text-warm-grey hover:text-error transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-warm-grey mb-1 block">Main Text</label>
+                      <input
+                        type="text"
+                        value={t.text}
+                        onChange={(e) => updateText(t.id, { text: e.target.value })}
+                        placeholder="e.g. Birthday Boy"
+                        className="w-full px-3 py-2 rounded-lg border border-border text-sm text-navy focus:outline-none focus:border-navy"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-warm-grey mb-1 block">Sub Text</label>
+                      <input
+                        type="text"
+                        value={t.subtext}
+                        onChange={(e) => updateText(t.id, { subtext: e.target.value })}
+                        placeholder="e.g. Turns 5!"
+                        className="w-full px-3 py-2 rounded-lg border border-border text-sm text-navy focus:outline-none focus:border-navy"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-warm-grey mb-1 block">Font</label>
+                      <select
+                        value={t.font}
+                        onChange={(e) => updateText(t.id, { font: e.target.value })}
+                        className="w-full px-3 py-2 rounded-lg border border-border text-sm text-navy focus:outline-none focus:border-navy bg-white"
+                      >
+                        {FONT_OPTIONS.map((f) => (
+                          <option key={f} value={f}>{f}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-warm-grey mb-1 block">Text Size</label>
+                        <input
+                          type="range"
+                          min={12}
+                          max={48}
+                          value={t.fontSize}
+                          onChange={(e) => updateText(t.id, { fontSize: Number(e.target.value) })}
+                          className="w-full"
+                        />
+                        <span className="text-[10px] text-warm-grey">{t.fontSize}px</span>
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-warm-grey mb-1 block">Sub Size</label>
+                        <input
+                          type="range"
+                          min={10}
+                          max={36}
+                          value={t.subtextFontSize}
+                          onChange={(e) => updateText(t.id, { subtextFontSize: Number(e.target.value) })}
+                          className="w-full"
+                        />
+                        <span className="text-[10px] text-warm-grey">{t.subtextFontSize}px</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-warm-grey mb-1 block">Colour</label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {TEXT_COLORS.map((c) => (
+                          <button
+                            key={c}
+                            onClick={() => updateText(t.id, { color: c })}
+                            className={cn(
+                              "w-6 h-6 rounded-md border-2 transition-all",
+                              t.color === c ? "border-navy scale-110" : "border-border"
+                            )}
+                            style={{ backgroundColor: c }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* Uploaded graphics list */}
             {graphics.length > 0 && (

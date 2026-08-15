@@ -27,6 +27,19 @@ function getFallbackImage(category: string, color: string, side: string): string
   return `/images/avatar/men_${colorLower}_${side}.png`;
 }
 
+interface DesignText {
+  id: string;
+  text: string;
+  subtext: string;
+  font: string;
+  color: string;
+  fontSize: number;
+  subtextFontSize: number;
+  x: number;
+  y: number;
+  side: "front" | "back";
+}
+
 interface DesignGraphic {
   id: string;
   src: string;
@@ -43,12 +56,14 @@ interface DesignGraphic {
 
 interface MultiViewGridProps {
   graphics: DesignGraphic[];
+  texts?: DesignText[];
   sizeCategory: "boy" | "girl" | "men" | "women";
   side: "front" | "back";
 }
 
 export function MultiViewGrid({
   graphics,
+  texts = [],
   sizeCategory,
   side,
 }: MultiViewGridProps) {
@@ -56,6 +71,7 @@ export function MultiViewGrid({
   const [localSide, setLocalSide] = useState<"front" | "back">(side);
 
   const sideGraphic = graphics.filter((g) => g.side === localSide)[0] || null;
+  const sideTexts = texts.filter((t) => t.side === localSide);
 
   const sizeLabel =
     sizeCategory === "boy"
@@ -124,6 +140,48 @@ export function MultiViewGrid({
                   }
                 }}
               />
+              {/* Text overlays */}
+              {sideTexts.map((t) => (
+                <div
+                  key={t.id}
+                  className="absolute pointer-events-none text-center"
+                  style={{
+                    left: `${t.x}%`,
+                    top: `${t.y}%`,
+                    transform: "translate(-50%, -50%)",
+                    maxWidth: "60%",
+                  }}
+                >
+                  {t.text && (
+                    <div
+                      style={{
+                        fontFamily: t.font,
+                        fontSize: `${t.fontSize}px`,
+                        color: t.color,
+                        fontWeight: "bold",
+                        lineHeight: 1.2,
+                        textShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      {t.text}
+                    </div>
+                  )}
+                  {t.subtext && (
+                    <div
+                      style={{
+                        fontFamily: t.font,
+                        fontSize: `${t.subtextFontSize}px`,
+                        color: t.color,
+                        lineHeight: 1.3,
+                        marginTop: "2px",
+                        textShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      {t.subtext}
+                    </div>
+                  )}
+                </div>
+              ))}
               {/* Graphic overlay on chest */}
               {sideGraphic && (
                 <div
@@ -190,6 +248,46 @@ export function MultiViewGrid({
                       }
                     }}
                   />
+                  {/* Text overlays */}
+                  {sideTexts.map((t) => (
+                    <div
+                      key={t.id}
+                      className="absolute pointer-events-none text-center"
+                      style={{
+                        left: `${t.x}%`,
+                        top: `${t.y}%`,
+                        transform: "translate(-50%, -50%)",
+                        maxWidth: "60%",
+                      }}
+                    >
+                      {t.text && (
+                        <div
+                          style={{
+                            fontFamily: t.font,
+                            fontSize: `${t.fontSize * 0.4}px`,
+                            color: t.color,
+                            fontWeight: "bold",
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          {t.text}
+                        </div>
+                      )}
+                      {t.subtext && (
+                        <div
+                          style={{
+                            fontFamily: t.font,
+                            fontSize: `${t.subtextFontSize * 0.4}px`,
+                            color: t.color,
+                            lineHeight: 1.3,
+                            marginTop: "1px",
+                          }}
+                        >
+                          {t.subtext}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                   {/* Graphic overlay on chest */}
                   {sideGraphic && (
                     <div
@@ -229,9 +327,9 @@ export function MultiViewGrid({
         })}
       </div>
 
-      {!sideGraphic && (
+      {!sideGraphic && sideTexts.length === 0 && (
         <div className="text-center py-12 text-warm-grey">
-          <p className="text-sm">Upload a design to see it on every colour</p>
+          <p className="text-sm">Upload a design or add text to see it on every colour</p>
         </div>
       )}
     </div>

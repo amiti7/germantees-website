@@ -26,6 +26,19 @@ function getFallbackImage(category: string, color: string, side: string): string
   return `/images/avatar/men_${colorLower}_${side}.png`;
 }
 
+interface DesignText {
+  id: string;
+  text: string;
+  subtext: string;
+  font: string;
+  color: string;
+  fontSize: number;
+  subtextFontSize: number;
+  x: number;
+  y: number;
+  side: "front" | "back";
+}
+
 interface DesignGraphic {
   id: string;
   src: string;
@@ -51,7 +64,9 @@ interface TshirtMockupProps {
   graphic: DesignGraphic | null;
   side: "front" | "back";
   sizeCategory: "boy" | "girl" | "men" | "women";
+  texts?: DesignText[];
   onGraphicMove: (x: number, y: number) => void;
+  onTextMove?: (id: string, x: number, y: number) => void;
   sizeData?: SizeData | null;
 }
 
@@ -60,33 +75,40 @@ export function TshirtMockup({
   graphic,
   side,
   sizeCategory,
+  texts = [],
   onGraphicMove,
+  onTextMove,
 }: TshirtMockupProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [dragTarget, setDragTarget] = useState<{ type: "graphic" | "text"; id?: string } | null>(null);
 
   const imageSrc = getAvatarImage(sizeCategory, colorName, side);
 
-  const handlePointerDown = useCallback(() => {
-    setIsDragging(true);
+  const handleGraphicPointerDown = useCallback(() => {
+    setDragTarget({ type: "graphic" });
+  }, []);
+
+  const handleTextPointerDown = useCallback((id: string) => {
+    setDragTarget({ type: "text", id });
   }, []);
 
   const handlePointerUp = useCallback(() => {
-    setIsDragging(false);
+    setDragTarget(null);
   }, []);
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      if (!isDragging || !containerRef.current || !graphic) return;
+      if (!dragTarget || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-      onGraphicMove(
-        Math.max(10, Math.min(90, x)),
-        Math.max(10, Math.min(90, y))
-      );
+      const x = Math.max(10, Math.min(90, ((e.clientX - rect.left) / rect.width) * 100));
+      const y = Math.max(10, Math.min(90, ((e.clientY - rect.top) / rect.height) * 100));
+      if (dragTarget.type === "graphic" && graphic) {
+        onGraphicMove(x, y);
+      } else if (dragTarget.type === "text" && dragTarget.id && onTextMove) {
+        onTextMove(dragTarget.id, x, y);
+      }
     },
-    [isDragging, graphic, onGraphicMove]
+    [dragTarget, graphic, onGraphicMove, onTextMove]
   );
 
   return (
@@ -119,12 +141,59 @@ export function TshirtMockup({
         </span>
       </div>
 
+      {/* Text overlays */}
+      {texts.map((t) => (
+        <div
+          key={t.id}
+          className={cn(
+            "absolute text-center cursor-grab",
+            dragTarget?.type === "text" && dragTarget.id === t.id && "cursor-grabbing"
+          )}
+          style={{
+            left: `${t.x}%`,
+            top: `${t.y}%`,
+            transform: "translate(-50%, -50%)",
+            maxWidth: "60%",
+          }}
+          onPointerDown={(e) => { e.stopPropagation(); handleTextPointerDown(t.id); }}
+        >
+          {t.text && (
+            <div
+              style={{
+                fontFamily: t.font,
+                fontSize: `${t.fontSize}px`,
+                color: t.color,
+                fontWeight: "bold",
+                lineHeight: 1.2,
+                textShadow: "0 1px 3px rgba(0,0,0,0.1)",
+              }}
+            >
+              {t.text}
+            </div>
+          )}
+          {t.subtext && (
+            <div
+              style={{
+                fontFamily: t.font,
+                fontSize: `${t.subtextFontSize}px`,
+                color: t.color,
+                lineHeight: 1.3,
+                marginTop: "2px",
+                textShadow: "0 1px 3px rgba(0,0,0,0.1)",
+              }}
+            >
+              {t.subtext}
+            </div>
+          )}
+        </div>
+      ))}
+
       {/* Graphic overlay on chest */}
       {graphic && (
         <div
           className={cn(
             "absolute cursor-grab",
-            isDragging && "cursor-grabbing"
+            dragTarget?.type === "graphic" && "cursor-grabbing"
           )}
           style={{
             left: `${graphic.x}%`,
@@ -133,7 +202,7 @@ export function TshirtMockup({
             maxWidth: "35%",
             maxHeight: "40%",
           }}
-          onPointerDown={handlePointerDown}
+          onPointerDown={handleGraphicPointerDown}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
