@@ -105,7 +105,18 @@ export const TSHIRT_COLORS = [
 ] as const;
 
 export const SIZE_CHART = {
-  kids: [
+  boy: [
+    { label: "2-3Y", chest: 24, length: 15 },
+    { label: "3-4Y", chest: 25, length: 16 },
+    { label: "4-5Y", chest: 26, length: 17 },
+    { label: "5-6Y", chest: 27, length: 18 },
+    { label: "6-7Y", chest: 28, length: 19 },
+    { label: "7-8Y", chest: 29, length: 20 },
+    { label: "8-10Y", chest: 30, length: 21 },
+    { label: "10-12Y", chest: 32, length: 23 },
+    { label: "12-14Y", chest: 34, length: 25 },
+  ],
+  girl: [
     { label: "2-3Y", chest: 24, length: 15 },
     { label: "3-4Y", chest: 25, length: 16 },
     { label: "4-5Y", chest: 26, length: 17 },

@@ -3,10 +3,27 @@
 import { useRef, useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 
-function getAvatarImage(gender: string, color: string, side: string): string {
-  const genderPrefix = gender === "women" ? "women" : "men";
+function getAvatarImage(category: string, color: string, side: string): string {
   const colorLower = color.toLowerCase();
+  if (category === "boy") {
+    return `/images/avatar/boy_2_5_${colorLower}_${side}.png`;
+  }
+  if (category === "girl") {
+    return `/images/avatar/girl_2_5_${colorLower}_${side}.png`;
+  }
+  const genderPrefix = category === "women" ? "women" : "men";
   return `/images/avatar/${genderPrefix}_${colorLower}_${side}.png`;
+}
+
+function getFallbackImage(category: string, color: string, side: string): string {
+  const colorLower = color.toLowerCase();
+  if (category === "boy") {
+    return `/images/avatar/men_${colorLower}_${side}.png`;
+  }
+  if (category === "girl") {
+    return `/images/avatar/women_${colorLower}_${side}.png`;
+  }
+  return `/images/avatar/men_${colorLower}_${side}.png`;
 }
 
 interface DesignGraphic {
@@ -33,7 +50,7 @@ interface TshirtMockupProps {
   colorName: string;
   graphic: DesignGraphic | null;
   side: "front" | "back";
-  sizeCategory: "kids" | "men" | "women";
+  sizeCategory: "boy" | "girl" | "men" | "women";
   onGraphicMove: (x: number, y: number) => void;
   sizeData?: SizeData | null;
 }
@@ -87,6 +104,12 @@ export function TshirtMockup({
         alt={`Model wearing ${colorName} t-shirt - ${side}`}
         className="w-full h-full object-contain max-w-md"
         draggable={false}
+        onError={(e) => {
+          const fallback = getFallbackImage(sizeCategory, colorName, side);
+          if ((e.target as HTMLImageElement).src !== fallback) {
+            (e.target as HTMLImageElement).src = fallback;
+          }
+        }}
       />
 
       {/* Side label */}

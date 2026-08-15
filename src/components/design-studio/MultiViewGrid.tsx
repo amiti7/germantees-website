@@ -4,10 +4,27 @@ import { useState } from "react";
 import { TSHIRT_COLORS } from "@/lib/constants";
 import { X } from "lucide-react";
 
-function getAvatarImage(gender: string, color: string, side: string): string {
-  const genderPrefix = gender === "women" ? "women" : "men";
+function getAvatarImage(category: string, color: string, side: string): string {
   const colorLower = color.toLowerCase();
+  if (category === "boy") {
+    return `/images/avatar/boy_2_5_${colorLower}_${side}.png`;
+  }
+  if (category === "girl") {
+    return `/images/avatar/girl_2_5_${colorLower}_${side}.png`;
+  }
+  const genderPrefix = category === "women" ? "women" : "men";
   return `/images/avatar/${genderPrefix}_${colorLower}_${side}.png`;
+}
+
+function getFallbackImage(category: string, color: string, side: string): string {
+  const colorLower = color.toLowerCase();
+  if (category === "boy") {
+    return `/images/avatar/men_${colorLower}_${side}.png`;
+  }
+  if (category === "girl") {
+    return `/images/avatar/women_${colorLower}_${side}.png`;
+  }
+  return `/images/avatar/men_${colorLower}_${side}.png`;
 }
 
 interface DesignGraphic {
@@ -26,7 +43,7 @@ interface DesignGraphic {
 
 interface MultiViewGridProps {
   graphics: DesignGraphic[];
-  sizeCategory: "kids" | "men" | "women";
+  sizeCategory: "boy" | "girl" | "men" | "women";
   side: "front" | "back";
 }
 
@@ -41,8 +58,10 @@ export function MultiViewGrid({
   const sideGraphic = graphics.filter((g) => g.side === localSide)[0] || null;
 
   const sizeLabel =
-    sizeCategory === "kids"
-      ? "Kids"
+    sizeCategory === "boy"
+      ? "Boy"
+      : sizeCategory === "girl"
+      ? "Girl"
       : sizeCategory === "men"
       ? "Men"
       : "Women";
@@ -98,6 +117,12 @@ export function MultiViewGrid({
                 alt={`Model wearing ${previewColor.name} t-shirt`}
                 className="w-full h-full object-contain max-w-md"
                 draggable={false}
+                onError={(e) => {
+                  const fallback = getFallbackImage(sizeCategory, previewColor.name, localSide);
+                  if ((e.target as HTMLImageElement).src !== fallback) {
+                    (e.target as HTMLImageElement).src = fallback;
+                  }
+                }}
               />
               {/* Graphic overlay on chest */}
               {sideGraphic && (
@@ -158,6 +183,12 @@ export function MultiViewGrid({
                     alt={`${color.name} t-shirt`}
                     className="w-full h-full object-contain"
                     draggable={false}
+                    onError={(e) => {
+                      const fallback = getFallbackImage(sizeCategory, color.name, localSide);
+                      if ((e.target as HTMLImageElement).src !== fallback) {
+                        (e.target as HTMLImageElement).src = fallback;
+                      }
+                    }}
                   />
                   {/* Graphic overlay on chest */}
                   {sideGraphic && (

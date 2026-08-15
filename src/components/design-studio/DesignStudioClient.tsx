@@ -19,7 +19,7 @@ import {
   Layers,
 } from "lucide-react";
 
-type SizeCategory = "kids" | "men" | "women";
+type SizeCategory = "boy" | "girl" | "men" | "women";
 type ViewMode = "single" | "multiview";
 type TshirtSide = "front" | "back";
 
@@ -39,8 +39,8 @@ interface DesignGraphic {
 
 export function DesignStudioClient() {
   const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string }>(TSHIRT_COLORS[0]);
-  const [sizeCategory, setSizeCategory] = useState<SizeCategory>("kids");
-  const [selectedSize, setSelectedSize] = useState<string>(SIZE_CHART.kids[0].label);
+  const [sizeCategory, setSizeCategory] = useState<SizeCategory>("boy");
+  const [selectedSize, setSelectedSize] = useState<string>(SIZE_CHART.boy[0].label);
   const [viewMode, setViewMode] = useState<ViewMode>("single");
   const [side, setSide] = useState<TshirtSide>("front");
   const [graphics, setGraphics] = useState<DesignGraphic[]>([]);
@@ -105,7 +105,7 @@ export function DesignStudioClient() {
   const sizes = SIZE_CHART[sizeCategory];
   const selectedSizeData = sizes.find((s) => s.label === selectedSize);
 
-  const price = sizeCategory === "kids" ? 699 : 899;
+  const price = (sizeCategory === "boy" || sizeCategory === "girl") ? 699 : 899;
 
   return (
     <div className="min-h-screen bg-ivory">
@@ -408,7 +408,7 @@ export function DesignStudioClient() {
                 Size Category
               </h3>
               <div className="flex gap-2 mb-3">
-                {(["kids", "men", "women"] as SizeCategory[]).map((cat) => (
+                {(["boy", "girl", "men", "women"] as SizeCategory[]).map((cat) => (
                   <button
                     key={cat}
                     onClick={() => {

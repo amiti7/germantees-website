@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 type Step = "garment" | "design" | "text" | "preview";
-type SizeCategory = "kids" | "men" | "women";
+type SizeCategory = "boy" | "girl" | "men" | "women";
 
 const STEPS: { key: Step; label: string; icon: React.ElementType }[] = [
   { key: "garment", label: "Garment", icon: Shirt },
@@ -41,8 +41,8 @@ const TEXT_COLORS = [
 export function CustomizerClient() {
   const [step, setStep] = useState<Step>("garment");
   const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string }>(TSHIRT_COLORS[0]);
-  const [sizeCategory, setSizeCategory] = useState<SizeCategory>("kids");
-  const [selectedSize, setSelectedSize] = useState<string>(SIZE_CHART.kids[0].label);
+  const [sizeCategory, setSizeCategory] = useState<SizeCategory>("boy");
+  const [selectedSize, setSelectedSize] = useState<string>(SIZE_CHART.boy[0].label);
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [backImage, setBackImage] = useState<string | null>(null);
   const [frontScale, setFrontScale] = useState(1);
@@ -61,7 +61,7 @@ export function CustomizerClient() {
 
   const stepIndex = STEPS.findIndex((s) => s.key === step);
   const sizes = SIZE_CHART[sizeCategory];
-  const price = sizeCategory === "kids" ? 699 : 899;
+  const price = (sizeCategory === "boy" || sizeCategory === "girl") ? 699 : 899;
   const selectedSizeData = sizes.find((s) => s.label === selectedSize);
 
   const currentImage = side === "front" ? frontImage : backImage;
@@ -336,7 +336,7 @@ export function CustomizerClient() {
                 <div className="bg-white rounded-xl border border-border p-4">
                   <h3 className="text-xs font-semibold tracking-widest uppercase text-gold mb-3">Size</h3>
                   <div className="flex gap-2 mb-3">
-                    {(["kids", "men", "women"] as SizeCategory[]).map((cat) => (
+                    {(["boy", "girl", "men", "women"] as SizeCategory[]).map((cat) => (
                       <button
                         key={cat}
                         onClick={() => { setSizeCategory(cat); setSelectedSize(SIZE_CHART[cat][0].label); }}
