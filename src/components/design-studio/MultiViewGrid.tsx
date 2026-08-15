@@ -5,7 +5,7 @@ import { TSHIRT_COLORS } from "@/lib/constants";
 import { X } from "lucide-react";
 
 // Map color names to avatar image filenames
-const COLOR_IMAGE_MAP: Record<string, string> = {
+const COLOR_FRONT_MAP: Record<string, string> = {
   White: "/images/avatar/men_white_front.png",
   Black: "/images/avatar/men_black_front.png",
   Navy: "/images/avatar/men_navy_front.png",
@@ -14,6 +14,17 @@ const COLOR_IMAGE_MAP: Record<string, string> = {
   Pink: "/images/avatar/men_pink_front.png",
   Green: "/images/avatar/men_green_front.png",
   Blue: "/images/avatar/men_blue_front.png",
+};
+
+const COLOR_BACK_MAP: Record<string, string> = {
+  White: "/images/avatar/men_white_back.png",
+  Black: "/images/avatar/men_black_back.png",
+  Navy: "/images/avatar/men_navy_back.png",
+  Red: "/images/avatar/men_red_back.png",
+  Yellow: "/images/avatar/men_yellow_back.png",
+  Pink: "/images/avatar/men_pink_back.png",
+  Green: "/images/avatar/men_green_back.png",
+  Blue: "/images/avatar/men_blue_back.png",
 };
 
 interface DesignGraphic {
@@ -33,11 +44,13 @@ interface MultiViewGridProps {
   graphics: DesignGraphic[];
   selectedGraphic: DesignGraphic | null;
   sizeCategory: "kids" | "men" | "women";
+  side: "front" | "back";
 }
 
 export function MultiViewGrid({
   selectedGraphic,
   sizeCategory,
+  side,
 }: MultiViewGridProps) {
   const [previewColor, setPreviewColor] = useState<{ name: string; hex: string } | null>(null);
 
@@ -71,7 +84,7 @@ export function MultiViewGrid({
             <div className="relative w-full h-full flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={COLOR_IMAGE_MAP[previewColor.name]}
+                src={(side === "back" ? COLOR_BACK_MAP : COLOR_FRONT_MAP)[previewColor.name]}
                 alt={`Model wearing ${previewColor.name} t-shirt`}
                 className="w-full h-full object-contain max-w-md"
                 draggable={false}
@@ -115,7 +128,8 @@ export function MultiViewGrid({
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {TSHIRT_COLORS.map((color) => {
           const isSelected = previewColor?.hex === color.hex;
-          const imageSrc = COLOR_IMAGE_MAP[color.name];
+          const imageMap = side === "back" ? COLOR_BACK_MAP : COLOR_FRONT_MAP;
+          const imageSrc = imageMap[color.name];
 
           return (
             <div

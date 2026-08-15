@@ -303,6 +303,7 @@ export function DesignStudioClient() {
                 graphics={graphics}
                 selectedGraphic={selectedGraphic}
                 sizeCategory={sizeCategory}
+                side={side}
               />
             )}
 

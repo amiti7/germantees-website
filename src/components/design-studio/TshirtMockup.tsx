@@ -3,7 +3,7 @@
 import { useRef, useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 
-const COLOR_IMAGE_MAP: Record<string, string> = {
+const COLOR_FRONT_MAP: Record<string, string> = {
   White: "/images/avatar/men_white_front.png",
   Black: "/images/avatar/men_black_front.png",
   Navy: "/images/avatar/men_navy_front.png",
@@ -12,6 +12,17 @@ const COLOR_IMAGE_MAP: Record<string, string> = {
   Pink: "/images/avatar/men_pink_front.png",
   Green: "/images/avatar/men_green_front.png",
   Blue: "/images/avatar/men_blue_front.png",
+};
+
+const COLOR_BACK_MAP: Record<string, string> = {
+  White: "/images/avatar/men_white_back.png",
+  Black: "/images/avatar/men_black_back.png",
+  Navy: "/images/avatar/men_navy_back.png",
+  Red: "/images/avatar/men_red_back.png",
+  Yellow: "/images/avatar/men_yellow_back.png",
+  Pink: "/images/avatar/men_pink_back.png",
+  Green: "/images/avatar/men_green_back.png",
+  Blue: "/images/avatar/men_blue_back.png",
 };
 
 interface DesignGraphic {
@@ -51,7 +62,8 @@ export function TshirtMockup({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const imageSrc = COLOR_IMAGE_MAP[colorName] || COLOR_IMAGE_MAP.White;
+  const imageMap = side === "back" ? COLOR_BACK_MAP : COLOR_FRONT_MAP;
+  const imageSrc = imageMap[colorName] || COLOR_FRONT_MAP.White;
 
   const handlePointerDown = useCallback(() => {
     setIsDragging(true);
