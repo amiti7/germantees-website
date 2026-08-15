@@ -3,27 +3,11 @@
 import { useRef, useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 
-const COLOR_FRONT_MAP: Record<string, string> = {
-  White: "/images/avatar/men_white_front.png",
-  Black: "/images/avatar/men_black_front.png",
-  Navy: "/images/avatar/men_navy_front.png",
-  Red: "/images/avatar/men_red_front.png",
-  Yellow: "/images/avatar/men_yellow_front.png",
-  Pink: "/images/avatar/men_pink_front.png",
-  Green: "/images/avatar/men_green_front.png",
-  Blue: "/images/avatar/men_blue_front.png",
-};
-
-const COLOR_BACK_MAP: Record<string, string> = {
-  White: "/images/avatar/men_white_back.png",
-  Black: "/images/avatar/men_black_back.png",
-  Navy: "/images/avatar/men_navy_back.png",
-  Red: "/images/avatar/men_red_back.png",
-  Yellow: "/images/avatar/men_yellow_back.png",
-  Pink: "/images/avatar/men_pink_back.png",
-  Green: "/images/avatar/men_green_back.png",
-  Blue: "/images/avatar/men_blue_back.png",
-};
+function getAvatarImage(gender: string, color: string, side: string): string {
+  const genderPrefix = gender === "women" ? "women" : "men";
+  const colorLower = color.toLowerCase();
+  return `/images/avatar/${genderPrefix}_${colorLower}_${side}.png`;
+}
 
 interface DesignGraphic {
   id: string;
@@ -49,6 +33,7 @@ interface TshirtMockupProps {
   colorName: string;
   graphic: DesignGraphic | null;
   side: "front" | "back";
+  sizeCategory: "kids" | "men" | "women";
   onGraphicMove: (x: number, y: number) => void;
   sizeData?: SizeData | null;
 }
@@ -57,13 +42,13 @@ export function TshirtMockup({
   colorName,
   graphic,
   side,
+  sizeCategory,
   onGraphicMove,
 }: TshirtMockupProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const imageMap = side === "back" ? COLOR_BACK_MAP : COLOR_FRONT_MAP;
-  const imageSrc = imageMap[colorName] || COLOR_FRONT_MAP.White;
+  const imageSrc = getAvatarImage(sizeCategory, colorName, side);
 
   const handlePointerDown = useCallback(() => {
     setIsDragging(true);

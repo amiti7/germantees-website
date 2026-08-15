@@ -208,6 +208,7 @@ export function DesignStudioClient() {
                     colorName={selectedColor.name}
                     graphic={selectedSideGraphic}
                     side={side}
+                    sizeCategory={sizeCategory}
                     onGraphicMove={(x: number, y: number) =>
                       selectedGraphicId &&
                       updateGraphic(selectedGraphicId, { x, y })
