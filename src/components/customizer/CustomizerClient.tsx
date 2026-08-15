@@ -433,9 +433,7 @@ export function CustomizerClient() {
                         >
                           <RotateCw size={14} />
                         </button>
-                        {currentRotation !== 0 && (
-                          <span className="text-[10px] text-warm-grey ml-1">{currentRotation}°</span>
-                        )}
+                        <span className="w-[2rem] shrink-0 text-[10px] text-warm-grey ml-1 text-right tabular-nums">{currentRotation}°</span>
                       </div>
                     </div>
                   </div>
