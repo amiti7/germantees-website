@@ -66,7 +66,7 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   "px-3 py-2 text-sm font-medium text-navy/70 hover:text-navy transition-colors rounded-lg hover:bg-ivory",
-                  link.label === "Create Your Own" || link.label === "Design Studio"
+                  link.label === "Design Studio"
                     ? "text-gold font-semibold hover:text-gold/80"
                     : ""
                 )}
@@ -118,7 +118,7 @@ export function Header() {
               onClick={() => setMobileOpen(false)}
               className={cn(
                 "block px-3 py-2.5 text-sm font-medium text-navy/70 hover:text-navy hover:bg-ivory rounded-lg transition-colors",
-                link.label === "Create Your Own" || link.label === "Design Studio"
+                link.label === "Design Studio"
                   ? "text-gold font-semibold"
                   : ""
               )}
