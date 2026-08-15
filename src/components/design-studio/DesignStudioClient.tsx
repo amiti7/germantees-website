@@ -38,6 +38,7 @@ interface DesignGraphic {
   scale: number;
   rotation: number;
   quality: "excellent" | "good" | "low";
+  side: TshirtSide;
 }
 
 export function DesignStudioClient() {
@@ -52,6 +53,8 @@ export function DesignStudioClient() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const selectedGraphic = graphics.find((g) => g.id === selectedGraphicId) || null;
+  const sideGraphics = graphics.filter((g) => g.side === side);
+  const selectedSideGraphic = selectedGraphic?.side === side ? selectedGraphic : sideGraphics[0] || null;
 
   const handleGraphicUpload = useCallback((file: File) => {
     const reader = new FileReader();
@@ -74,6 +77,7 @@ export function DesignStudioClient() {
           scale: 1,
           rotation: 0,
           quality,
+          side,
         };
         setGraphics((prev) => [...prev, newGraphic]);
         setSelectedGraphicId(newGraphic.id);
@@ -81,7 +85,7 @@ export function DesignStudioClient() {
       img.src = e.target?.result as string;
     };
     reader.readAsDataURL(file);
-  }, []);
+  }, [side]);
 
   const handleTryOnUpload = useCallback((file: File) => {
     const reader = new FileReader();
@@ -191,7 +195,11 @@ export function DesignStudioClient() {
                 {/* Front/Back toggle */}
                 <div className="flex items-center justify-center gap-2 p-3 border-b border-border">
                   <button
-                    onClick={() => setSide("front")}
+                    onClick={() => {
+                      setSide("front");
+                      const fg = graphics.find((g) => g.side === "front");
+                      if (fg) setSelectedGraphicId(fg.id);
+                    }}
                     className={cn(
                       "px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
                       side === "front"
@@ -202,7 +210,11 @@ export function DesignStudioClient() {
                     Front
                   </button>
                   <button
-                    onClick={() => setSide("back")}
+                    onClick={() => {
+                      setSide("back");
+                      const bg = graphics.find((g) => g.side === "back");
+                      if (bg) setSelectedGraphicId(bg.id);
+                    }}
                     className={cn(
                       "px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
                       side === "back"
@@ -218,7 +230,7 @@ export function DesignStudioClient() {
                 <div className="relative aspect-square max-h-[600px] mx-auto p-8">
                   <TshirtMockup
                     color={selectedColor.hex}
-                    graphic={selectedGraphic}
+                    graphic={selectedSideGraphic}
                     side={side}
                     onGraphicMove={(x: number, y: number) =>
                       selectedGraphicId &&
@@ -229,12 +241,12 @@ export function DesignStudioClient() {
                 </div>
 
                 {/* Canvas controls */}
-                {selectedGraphic && (
+                {selectedSideGraphic && (
                   <div className="flex items-center justify-center gap-3 p-3 border-t border-border bg-ivory/50">
                     <button
                       onClick={() =>
-                        updateGraphic(selectedGraphic.id, {
-                          scale: Math.min(selectedGraphic.scale + 0.1, 3),
+                        updateGraphic(selectedSideGraphic.id, {
+                          scale: Math.min(selectedSideGraphic.scale + 0.1, 3),
                         })
                       }
                       className="p-2 rounded-lg hover:bg-white border border-border text-navy"
@@ -244,8 +256,8 @@ export function DesignStudioClient() {
                     </button>
                     <button
                       onClick={() =>
-                        updateGraphic(selectedGraphic.id, {
-                          scale: Math.max(selectedGraphic.scale - 0.1, 0.2),
+                        updateGraphic(selectedSideGraphic.id, {
+                          scale: Math.max(selectedSideGraphic.scale - 0.1, 0.2),
                         })
                       }
                       className="p-2 rounded-lg hover:bg-white border border-border text-navy"
@@ -255,8 +267,8 @@ export function DesignStudioClient() {
                     </button>
                     <button
                       onClick={() =>
-                        updateGraphic(selectedGraphic.id, {
-                          rotation: (selectedGraphic.rotation - 15 + 360) % 360,
+                        updateGraphic(selectedSideGraphic.id, {
+                          rotation: (selectedSideGraphic.rotation - 15 + 360) % 360,
                         })
                       }
                       className="p-2 rounded-lg hover:bg-white border border-border text-navy"
@@ -266,8 +278,8 @@ export function DesignStudioClient() {
                     </button>
                     <button
                       onClick={() =>
-                        updateGraphic(selectedGraphic.id, {
-                          rotation: (selectedGraphic.rotation + 15) % 360,
+                        updateGraphic(selectedSideGraphic.id, {
+                          rotation: (selectedSideGraphic.rotation + 15) % 360,
                         })
                       }
                       className="p-2 rounded-lg hover:bg-white border border-border text-navy"
@@ -277,7 +289,7 @@ export function DesignStudioClient() {
                     </button>
                     <button
                       onClick={() =>
-                        updateGraphic(selectedGraphic.id, {
+                        updateGraphic(selectedSideGraphic.id, {
                           x: 50,
                           y: 50,
                           scale: 1,
@@ -294,15 +306,15 @@ export function DesignStudioClient() {
                       <div
                         className={cn(
                           "w-2 h-2 rounded-full",
-                          selectedGraphic.quality === "excellent"
+                          selectedSideGraphic.quality === "excellent"
                             ? "bg-success"
-                            : selectedGraphic.quality === "good"
+                            : selectedSideGraphic.quality === "good"
                             ? "bg-gold"
                             : "bg-error"
                         )}
                       />
                       <span className="text-xs text-warm-grey capitalize">
-                        {selectedGraphic.quality} quality
+                        {selectedSideGraphic.quality} quality
                       </span>
                     </div>
                   </div>
@@ -344,7 +356,7 @@ export function DesignStudioClient() {
                   {graphics.map((g) => (
                     <div
                       key={g.id}
-                      onClick={() => setSelectedGraphicId(g.id)}
+                      onClick={() => { setSelectedGraphicId(g.id); setSide(g.side); }}
                       className={cn(
                         "flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors",
                         selectedGraphicId === g.id
@@ -376,6 +388,9 @@ export function DesignStudioClient() {
                           />
                           <span className="text-xs text-warm-grey capitalize">
                             {g.quality}
+                          </span>
+                          <span className="text-[10px] text-warm-grey/70 uppercase ml-1">
+                            {g.side}
                           </span>
                         </div>
                       </div>
