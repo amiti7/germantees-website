@@ -102,7 +102,7 @@ export function MultiViewGrid({
 
       {/* Large preview when a color is selected */}
       {previewColor && (
-        <div className="mb-6 rounded-xl border border-border overflow-hidden relative" style={{ backgroundColor: "#d7d7d7" }}>
+        <div className="mb-6 rounded-xl border border-border overflow-hidden relative" style={{ backgroundColor: "#ffffff" }}>
           <button
             onClick={() => setPreviewColor(null)}
             className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/90 border border-border flex items-center justify-center hover:bg-white transition-colors shadow-sm"
@@ -175,7 +175,7 @@ export function MultiViewGrid({
                   : "border-border hover:border-navy/30"
               }`}
             >
-              <div className="aspect-square relative overflow-hidden p-2" style={{ backgroundColor: "#d7d7d7" }}>
+              <div className="aspect-square relative overflow-hidden p-2" style={{ backgroundColor: "#ffffff" }}>
                 <div className="relative w-full h-full flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img

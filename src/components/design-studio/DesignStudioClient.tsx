@@ -202,7 +202,7 @@ export function DesignStudioClient() {
                 </div>
 
                 {/* T-shirt mockup */}
-                <div className="relative aspect-square max-h-[600px] mx-auto p-8" style={{ backgroundColor: "#d7d7d7" }}>
+                <div className="relative aspect-square max-h-[600px] mx-auto p-8" style={{ backgroundColor: "#ffffff" }}>
                   <TshirtMockup
                     color={selectedColor.hex}
                     colorName={selectedColor.name}
