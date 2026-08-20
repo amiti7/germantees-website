@@ -1,9 +1,10 @@
-import { MOCK_PRODUCTS } from "@/lib/constants";
+import { fetchProducts } from "@/lib/api";
 import { ProductCard } from "@/components/ui/ProductCard";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-export function FeaturedProducts() {
+export async function FeaturedProducts() {
+  const products = await fetchProducts();
   return (
     <section className="py-16 sm:py-20 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,7 +29,7 @@ export function FeaturedProducts() {
 
         {/* Product grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-          {MOCK_PRODUCTS.slice(0, 8).map((product) => (
+          {products.slice(0, 8).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

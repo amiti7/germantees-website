@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Star, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TSHIRT_COLORS } from "@/lib/constants";
-import type { Product } from "@/lib/constants";
+import type { Product } from "@/lib/api";
 
 interface ProductCardProps {
   product: Product;

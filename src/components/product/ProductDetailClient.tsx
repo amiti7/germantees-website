@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { TSHIRT_COLORS } from "@/lib/constants";
-import type { Product } from "@/lib/constants";
+import type { Product } from "@/lib/api";
 import {
   Star,
   Heart,

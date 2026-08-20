@@ -1,4 +1,4 @@
-import { MOCK_PRODUCTS } from "@/lib/constants";
+import { fetchProducts, fetchProductBySlug } from "@/lib/api";
 import { ProductDetailClient } from "@/components/product/ProductDetailClient";
 import { notFound } from "next/navigation";
 
@@ -7,12 +7,13 @@ interface ProductPageProps {
 }
 
 export async function generateStaticParams() {
-  return MOCK_PRODUCTS.map((p) => ({ slug: p.slug }));
+  const products = await fetchProducts();
+  return products.map((p) => ({ slug: p.slug }));
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = MOCK_PRODUCTS.find((p) => p.slug === slug);
+  const product = await fetchProductBySlug(slug);
   if (!product) return notFound();
 
   return <ProductDetailClient product={product} />;
